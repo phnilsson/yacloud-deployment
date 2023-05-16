@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yacloudpython
+  namespace: traininglog
+  labels:
+    app: yacloudpython
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yacloudpython
+  template:
+    metadata:
+      labels:
+        app: yacloudpython
+    spec:
+      containers:
+        - name: yacloudpython
+          image: git.systementor.se/philip.nilsson/yacloudpython
+          ports:
+            - containerPort: 5000
+          env:
+          - name: RUNENVIRONMENT
+            value: "Production"
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: traininglog
+  name: yacloudpython-service
+  labels:
+    app: yacloudpython
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: yacloudpython
+  sessionAffinity: None

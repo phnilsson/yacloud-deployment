@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mysql-backup
+  namespace: traininglog
+spec:
+  template:
+    spec:
+      containers:
+      - name: backup
+        image: alpine:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            apk --no-cache add mysql-client aws-cli
+            TIMESTAMP=$(date +"%F")
+            echo $MYSQL_SERVICE_HOST
+            echo $MYSQL_SERVICE_PORT
+            mysqldump -h $MYSQL_SERVICE_HOST -P $MYSQL_SERVICE_PORT -uroot -pHejsan123 $DB_NAME > /tmp/${DB_NAME}_${TIMESTAMP}.sql
+            ls /tmp
+            aws s3 cp /tmp/${DB_NAME}_${TIMESTAMP}.sql s3://$BUCKET_NAME/${DB_NAME}_${TIMESTAMP}.sql
+            rm /tmp/${DB_NAME}_${TIMESTAMP}.sql
+        env:
+        - name: DB_NAME
+          value: traininglog
+        - name: DB_USER
+          value: root
+        - name: DB_PASS
+          value: Hejsan123
+        - name: BUCKET_NAME
+          value: cloudnativecomputing
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: aws-secret
+        - name: AWS_ACCESS_KEY_ID
+          value: AKIAY6DTXVP64RLIEW3J
+        - name: AWS_DEFAULT_REGION
+          value: eu-north-1
+        
+      restartPolicy: OnFailure

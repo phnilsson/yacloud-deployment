@@ -1,0 +1,49 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: traininglog
+  name: sites
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "traininglog.hemsida.eu"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: yacloudreact-service
+                port:
+                  number: 80
+    - host: "yacloudgo.traininglog.hemsida.eu"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: yacloudgo-service
+                port:
+                  number: 80
+    - host: "yacloudgotmp.traininglog.hemsida.eu"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: yacloudgo-service
+                port:
+                  number: 80
+    - host: "yacloudpython.traininglog.hemsida.eu"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: yacloudpython-service
+                port:
+                  number: 80

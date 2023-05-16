@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yacloudreact
+  namespace: traininglog
+  labels:
+    app: yacloudreact
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yacloudreact
+  template:
+    metadata:
+      labels:
+        app: yacloudreact
+    spec:
+      containers:
+        - name: yacloudreact
+          image: git.systementor.se/philip.nilsson/yacloudreact
+          ports:
+            - containerPort: 3000
+          env:
+          - name: RUNENVIRONMENT
+            value: "Production"
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: traininglog
+  name: yacloudreact-service
+  labels:
+    app: yacloudreact
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: yacloudreact
+  sessionAffinity: None

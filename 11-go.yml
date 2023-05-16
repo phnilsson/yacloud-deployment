@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yacloudgo
+  namespace: traininglog
+  labels:
+    app: yacloudgo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yacloudgo
+  template:
+    metadata:
+      labels:
+        app: yacloudgo
+    spec:
+      containers:
+        - name: yacloudgo
+          image: git.systementor.se/philip.nilsson/yacloudgo
+          ports:
+            - containerPort: 8080
+          env:
+          - name: RUNENVIRONMENT
+            value: "Production"
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: traininglog
+  name: yacloudgo-service
+  labels:
+    app: yacloudgo
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: yacloudgo
+  sessionAffinity: None
